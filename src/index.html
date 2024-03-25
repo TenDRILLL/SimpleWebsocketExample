@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="text">
+Received websocket messages below:
+</div>
+<script>
+    const ws = new WebSocket("ws://localhost:1000");
+    ws.onopen = ()=>{
+        ws.send("");
+    };
+    ws.onclose = ()=>{
+       ws.close();
+    };
+
+    ws.onmessage = (event)=>{
+        let eventData;
+        try {
+            eventData = JSON.parse(event.data.toString());
+        } catch(e){
+            return console.error("Received malformed Websocket data.");
+        }
+
+        document.getElementById("text").innerHTML += `<p>${JSON.stringify(eventData)}</p>`;
+
+        if(eventData.opCode === "ACK"){
+            ws.send(JSON.stringify({
+                opCode: "MARCO"
+            }));
+        }
+    };
+</script>
+</body>
+</html>
